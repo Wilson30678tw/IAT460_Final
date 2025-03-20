@@ -20,9 +20,20 @@ public class QwenChat : MonoBehaviour
 
     private List<Dictionary<string, string>> _messages = new List<Dictionary<string, string>>(); // 儲存對話歷史
     private Coroutine thinkingCoroutine;
+    private TrumpQuotesDatabase quotesDatabase;
 
     private void Start()
     {
+        quotesDatabase = FindAnyObjectByType<TrumpQuotesDatabase>();
+        if (quotesDatabase == null)
+        {
+            Debug.LogError("Error: TrumpQuotesDatabase not found in the scene!");
+        }
+        else
+        {
+            Debug.Log("✅ TrumpQuotesDatabase 成功找到！");
+        }
+
         // 確保 UI 事件綁定正確
         sendButton.onClick.AddListener(SendMessageToAI);
         inputField.onSubmit.AddListener(delegate { SendMessageToAI(); });
@@ -69,6 +80,28 @@ public class QwenChat : MonoBehaviour
 
     private IEnumerator SendRequest(string prompt, int maxTokens)
     {
+        // 1️⃣ 先檢索特朗普語錄
+        string retrievedInfo = GetComponent<TrumpQuotesDatabase>().GetRelevantQuote(prompt);
+    
+        // 2️⃣ **保留原始 Prompt，只在有語錄時增加背景知識**
+        string finalPrompt;
+    
+        if (!string.IsNullOrEmpty(retrievedInfo))
+        {
+            finalPrompt = 
+                $"Here is a quote from Donald Trump: \"{retrievedInfo}\".\n\n" + 
+                $"Now, based on his speaking style, answer the following: {prompt}";
+        }
+        
+        else if (string.IsNullOrEmpty(retrievedInfo))
+        {
+            finalPrompt = "I'm sorry, I cannot answer that question without factual information.";
+        }
+        else
+        {
+            finalPrompt = prompt; // 直接使用用戶輸入的 prompt
+        }
+        
         string json = "{ " +
                       "\"model\": \"Qwen/Qwen2.5-Coder-32B-Instruct\", " +
                       "\"messages\": [" +
@@ -107,10 +140,21 @@ public class QwenChat : MonoBehaviour
         try
         {
             JObject parsedJson = JObject.Parse(jsonResponse);
-            return parsedJson["choices"][0]["message"]["content"].ToString();
+        
+            // 檢查 JSON 結構，確保 `choices` 存在
+            if (parsedJson["choices"] != null && parsedJson["choices"].HasValues)
+            {
+                return parsedJson["choices"][0]["message"]["content"].ToString();
+            }
+            else
+            {
+                Debug.LogError("❌ API 回應 JSON 格式錯誤：" + jsonResponse);
+                return "Error: AI response format is invalid.";
+            }
         }
-        catch
+        catch (System.Exception ex)
         {
+            Debug.LogError("❌ 解析 JSON 失敗：" + ex.Message);
             return "Error: Unable to parse AI response.";
         }
     }
