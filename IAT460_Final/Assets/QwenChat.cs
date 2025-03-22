@@ -21,10 +21,12 @@ public class QwenChat : MonoBehaviour
     private List<Dictionary<string, string>> _messages = new List<Dictionary<string, string>>(); // 儲存對話歷史
     private Coroutine thinkingCoroutine;
     private TrumpQuotesDatabase quotesDatabase;
+    private ElevenLabsTTS tts;
 
     private void Start()
     {
         quotesDatabase = FindAnyObjectByType<TrumpQuotesDatabase>();
+        tts = FindAnyObjectByType<ElevenLabsTTS>();
         if (quotesDatabase == null)
         {
             Debug.LogError("Error: TrumpQuotesDatabase not found in the scene!");
@@ -56,25 +58,32 @@ public class QwenChat : MonoBehaviour
 
     private void AddMessage(string role, string content, bool isTemporary = false)
     {
-        if (isTemporary) // 如果是 "Thinking..." 訊息，啟動計時器讓它 3 秒後消失
+       
+        if (isTemporary)
         {
             chatLog.text = role + ": " + content;
 
-            // 確保舊的 "Thinking..." 訊息計時被取消，避免重疊
             if (thinkingCoroutine != null)
             {
                 StopCoroutine(thinkingCoroutine);
             }
-            thinkingCoroutine = StartCoroutine(ClearThinkingMessage(3f)); // 3 秒後清除
+            thinkingCoroutine = StartCoroutine(ClearThinkingMessage(3f));
         }
-        else // 正式 AI 回應，應該一直顯示，直到玩家下一次輸入
+        else
         {
             if (thinkingCoroutine != null)
             {
-                StopCoroutine(thinkingCoroutine); // 確保 "Thinking..." 被清除
+                StopCoroutine(thinkingCoroutine);
                 thinkingCoroutine = null;
             }
-            chatLog.text = role + ": " + content; // 直接覆蓋，確保 AI 回應長時間顯示
+
+            chatLog.text = role + ": " + content;
+
+            // ✅ 這裡加入 Trump 語音播放
+            if (role == "Trump" && tts != null)
+            {
+                tts.Speak(content); // 🔈 播放語音！
+            }
         }
     }
 
@@ -169,4 +178,5 @@ public class QwenChat : MonoBehaviour
             chatLog.text = "";
         }
     }
+    
 }
