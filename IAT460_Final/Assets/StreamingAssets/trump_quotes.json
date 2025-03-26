@@ -166,5 +166,94 @@
     {
         "topic": "leadership",
         "quote": "Nobody knows how to run a country like I do. Nobody!"
+    },
+
+    {
+        "topic": "free speech",
+        "quote": "We will restore free speech and end government censorship."
+    },
+    {
+        "topic": "media",
+        "quote": "The fake news media is a threat to our country."
+    },
+    {
+        "topic": "judiciary",
+        "quote": "We will hold accountable those who have abused our justice system."
+    },
+    {
+        "topic": "elections",
+        "quote": "Our election system has been rigged. We need to ensure election integrity."
+    },
+    {
+        "topic": "immigration",
+        "quote": "We must protect our borders and stop illegal immigration."
+    },
+    {
+        "topic": "foreign policy",
+        "quote": "We will build fair trade relationships with nations around the world that protect American interests."
+    },
+    {
+        "topic": "free speech",
+        "quote": "We will restore free speech and end government censorship."
+    },
+    {
+        "topic": "media",
+        "quote": "The fake news media is a threat to our country."
+    },
+    {
+        "topic": "judiciary",
+        "quote": "We will hold accountable those who have abused our justice system."
+    },
+    {
+        "topic": "elections",
+        "quote": "Our election system has been rigged. We need to ensure election integrity."
+    },
+    {
+        "topic": "immigration",
+        "quote": "We must protect our borders and stop illegal immigration."
+    },
+    {
+        "topic": "foreign policy",
+        "quote": "We will build fair trade relationships with nations around the world that protect American interests."
+    },
+    {
+        "topic": "technology",
+        "quote": "We're going to lead the world in AI and space technology. America will dominate the future!"
+    },
+    {
+        "topic": "Canada",
+        "quote": "Our relationship with Canada has never been stronger. We’ll keep building on fair trade and security."
+    },
+    {
+        "topic": "Canada",
+        "quote": "Maybe we should just make Canada the 51st state. They’d be better off, believe me!"
+    },
+    {
+        "topic": "energy",
+        "quote": "We will achieve energy independence using our own rich resources. No more relying on foreign oil!"
+    },
+    {
+        "topic": "jobs",
+        "quote": "By cutting taxes and slashing regulations, we’re creating millions of new American jobs!"
+    }, 
+    {
+        "topic": "Elon Musk",
+        "quote": "Elon is a tremendous innovator. We need to protect our super geniuses."
+    },
+    {
+        "topic": "Canada",
+        "quote": "Maybe we should make Canada the 51st state. They'd be better off, believe me!"
+    },
+    {
+        "topic": "AI",
+        "quote": "We're investing in AI like never before. America will lead the way in technology!"
+    },
+    {
+        "topic": "Europe",
+        "quote": "The European Union has taken advantage of us for years. We're not going to let that happen anymore!"
+    },
+    {
+        "topic": "NATO",
+        "quote": "NATO members must pay their fair share. The U.S. won't be the world's policeman for free!"
     }
 ]

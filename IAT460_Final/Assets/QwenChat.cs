@@ -1,14 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq; // 確保 Unity 安裝了 Newtonsoft.Json 套件
 
 public class QwenChat : MonoBehaviour
 {
+    [Header("UI Panels")]
+    public GameObject startPanel;
+    public GameObject qwenPanel;
+    
     [Header("API 設定")]
     public string apiURL = "https://api.your-qwen-endpoint.com"; // 替換為你的 Qwen2.5 API URL
     public string apiKey = "your-api-key"; // 替換為你的 API 金鑰
@@ -25,6 +31,9 @@ public class QwenChat : MonoBehaviour
 
     private void Start()
     {
+        startPanel.SetActive(true);
+        qwenPanel.SetActive(false);
+        
         quotesDatabase = FindAnyObjectByType<TrumpQuotesDatabase>();
         tts = FindAnyObjectByType<ElevenLabsTTS>();
         if (quotesDatabase == null)
@@ -41,6 +50,14 @@ public class QwenChat : MonoBehaviour
         inputField.onSubmit.AddListener(delegate { SendMessageToAI(); });
     }
 
+    public void OnStartButtonClicked()
+    {
+        startPanel.SetActive(false);
+        qwenPanel.SetActive(true);
+
+        // AI 或其他初始化也可寫在這
+        chatLog.text = "Welcome! Ask me anything.";
+    }
     public void SendMessageToAI()
     {
         string userInput = inputField.text.Trim(); // 去除空白
@@ -61,7 +78,7 @@ public class QwenChat : MonoBehaviour
        
         if (isTemporary)
         {
-            chatLog.text = role + ": " + content;
+            // chatLog.text = role + ": " + content;
 
             if (thinkingCoroutine != null)
             {
@@ -82,7 +99,8 @@ public class QwenChat : MonoBehaviour
             // ✅ 這裡加入 Trump 語音播放
             if (role == "Trump" && tts != null)
             {
-                tts.Speak(content); // 🔈 播放語音！
+                // tts.Speak(content); // 🔈 播放語音！
+                StartCoroutine(PlayWithUI(content));
             }
         }
     }
@@ -111,16 +129,16 @@ public class QwenChat : MonoBehaviour
             finalPrompt = prompt; // 直接使用用戶輸入的 prompt
         }
         
-        string json = "{ " +
-                      "\"model\": \"Qwen/Qwen2.5-Coder-32B-Instruct\", " +
-                      "\"messages\": [" +
-                      "{ \"role\": \"system\", \"content\": \"You are an AI version of Donald Trump. Reply in how he speak style and a little bit unpredictable. Close with a memorable phrase, such as “We’re gonna win big, believe me. Make it entertaining, confident, and absolutely full of personality.\" }, " +
-                      "{ \"role\": \"user\", \"content\": \"" + prompt + "\" }" +
-                      "], " +
-                      "\"max_tokens\": " + maxTokens + ", " +
-                      "\"temperature\": 0.8, " +
-                      "\"top_p\": 0.9 " +
-                      "}";
+        string json =  "{ " +
+                       "\"model\": \"Qwen/Qwen2.5-Coder-32B-Instruct\", " +
+                       "\"messages\": [" +
+                       "{ \"role\": \"system\", \"content\": \"You are an AI version of Donald Trump. Reply in how he speak style and a little bit unpredictable. Close with a memorable phrase like Donald Trump should have,and no need to be long. Make it entertaining, confident, and absolutely full of personality.\" }, " +
+                       "{ \"role\": \"user\", \"content\": \"" + prompt + "\" }" +
+                       "], " +
+                       "\"max_tokens\": " + maxTokens + ", " +
+                       "\"temperature\": 0.8, " +
+                       "\"top_p\": 0.9 " +
+                       "}";
 
         using UnityWebRequest webRequest = new UnityWebRequest(apiURL, "POST", new DownloadHandlerBuffer(), new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json)));
         webRequest.SetRequestHeader("Content-Type", "application/json");
@@ -135,7 +153,7 @@ public class QwenChat : MonoBehaviour
             // **解析 JSON 只提取 "content" 部分**
             string cleanResponse = ExtractContent(response);
 
-            AddMessage("Trump", cleanResponse);
+            StartCoroutine(PlayWithUI(cleanResponse));
         }
         else
         {
@@ -173,10 +191,64 @@ public class QwenChat : MonoBehaviour
         yield return new WaitForSeconds(delay);
     
         // 確保清除的訊息仍然是 "Thinking..."，避免覆蓋真正的 AI 回應
-        if (chatLog.text.Contains("Thinking..."))
+        if (chatLog.text.Contains("")) //Thinking....
         {
             chatLog.text = "";
         }
     }
-    
+    private IEnumerator PlayWithUI(string text)
+    {
+        TrumpUIDialogue trumpUI = FindAnyObjectByType<TrumpUIDialogue>();
+        if (trumpUI == null)
+        {
+            Debug.LogError("❌ 找不到 TrumpUIDialogue.cs");
+            yield break;
+        }
+
+        // 用 ElevenLabs 播語音（取得 AudioClip）
+        string url = $"https://api.elevenlabs.io/v1/text-to-speech/{tts.voiceId}/stream";
+
+        var payload = new ElevenLabsTTS.TTSRequest
+        {
+            text = text,
+            model_id = "eleven_monolingual_v1",
+            voice_settings = new ElevenLabsTTS.VoiceSettings
+            {
+                stability = 0.7f,
+                similarity_boost = 0.85f
+            }
+        };
+
+        string json = JsonConvert.SerializeObject(payload);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+
+        UnityWebRequest req = UnityWebRequest.PostWwwForm(url, "POST");
+        req.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        req.downloadHandler = new DownloadHandlerAudioClip(url, AudioType.MPEG);
+        req.SetRequestHeader("Content-Type", "application/json");
+        req.SetRequestHeader("Accept", "audio/mpeg");
+        req.SetRequestHeader("xi-api-key", tts.apiKey);
+
+        yield return req.SendWebRequest();
+
+        if (req.result == UnityWebRequest.Result.Success)
+        {
+            AudioClip clip = DownloadHandlerAudioClip.GetContent(req);
+            trumpUI.PlayTrumpSpeech(text, clip); // ✅ 傳到 UI 系統播放文字 + 聲音
+        }
+        else
+        {
+            Debug.LogError("❌ ElevenLabs 語音下載失敗：" + req.error);
+        }
+    }
+    public void OnQuitButtonClicked()
+    {
+        Debug.Log("Quit button pressed.");
+        Application.Quit();
+
+        // 注意：在 Editor 模式不會真正退出，但在打包後有效
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }
