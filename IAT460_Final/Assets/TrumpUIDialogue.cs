@@ -75,7 +75,7 @@ public class TrumpUIDialogue : MonoBehaviour
     {
         yield return new WaitWhile(() => audioSource.isPlaying);
         yield return new WaitUntil(() => dialogueText.text.Length >= 1); // 確保打完字
-        yield return new WaitForSeconds(0.5f); // 留個 0.5 秒緩衝
+        yield return new WaitForSeconds(0.3f); // 留個 0.3 秒緩衝
         trumpImage.sprite = trumpIdle;
         // dialogueBox.SetActive(false);
     }
