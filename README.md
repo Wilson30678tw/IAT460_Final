@@ -58,6 +58,6 @@ IAT 460 - Spring 2025
 
 ---
 
-## 📄 Authorization
+## Authorization
 
 This project is intended for IAT 460 coursework and academic use only, and should not be used for commercial purposes.
