@@ -11,6 +11,8 @@ This is a voice simulator featuring Trump, using the generative AI model Qwen2.5
 - RAG: Trump quotes file `trump_quotes.json` as a retrieval generation aid
 - ElevenLabs TTS API: convert text to Trump-like style speech
 - C# script integration
+- Images using in this project are generated from the Rundiffusion expect the Oval Office image, The Oval Office image is from DeviantArt made by Pandcorps.
+- Image Cite: Pandcorps. (2015, July 9). Oval Office [Digital art]. DeviantArt. https://www.deviantart.com/pandcorps/art/Oval-Office-547210693
 
 ---------
 ## Installation and execution
@@ -18,7 +20,7 @@ This is a voice simulator featuring Trump, using the generative AI model Qwen2.5
 ### Installation
 
 1. Open the project folder with Unity 2022+. 2.
-2. Ensure that the `Newtonsoft.Json` package is installed (via the Unity Package Manager). 3.
+2. Ensure that the `Newtonsoft.Json` package is installed (via the Unity Package Manager). 
 3. Go to the following two files to set whether the API key and voice ID exist:
    - `QwenChat.cs`: Fill in the Qwen2.5 API URL and Bearer Token.
    - `ElevenLabsTTS.cs`: fill in the API Key and VoiceID of ElevenLabs.
@@ -41,6 +43,13 @@ TrumpSimulator/
 ```
 
 --- --- --- --- --- --- --- --- --- --- --- ---
+## Sample screen
+
+![image](https://github.com/user-attachments/assets/2fdb19e8-862a-4f66-aa73-c91a6e6c9a8c)
+
+![image](https://github.com/user-attachments/assets/9a080511-39f8-4869-b91b-dd25aea6b7f5)
+
+--- --- ---
 
 ## Creator
 
