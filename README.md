@@ -1,6 +1,6 @@
 # Trump Simulator - Trump Speech AI Simulator
 
-This is a voice simulator featuring Trump, using the generative AI model Qwen2.5 plus a Recorded Grammar Database (RAG) to provide realistic conversations that are converted to Trump's voice playback via ElevenLabs TTS. Users can enter questions to interact with the AI to simulate Trump's style and tone.
+This is a voice simulator featuring Trump, using the generative AI model Qwen2.5 plus a Retrieval-Augmented Generation (RAG) to provide realistic conversations that are converted to Trump's voice playback via ElevenLabs TTS. Users can enter questions to interact with the AI to simulate Trump's style and tone.
 
 ---
 
